@@ -14,10 +14,7 @@ class Place:
     reviews_count: Optional[int]
     categories: List[str]
     coordinates: Dict[str, float]
-    working_hours: Optional[str]
-    phone: Optional[str]
-    website: Optional[str]
-    photo_url: Optional[str]
+    card2gis: str
 
 
 class GISClient:
@@ -113,10 +110,7 @@ class GISClient:
                     reviews_count=self._extract_reviews_count(item),
                     categories=self._extract_categories(item),
                     coordinates=self._extract_coordinates(item),
-                    working_hours=self._extract_working_hours(item),
-                    phone=self._extract_phone(item),
-                    website=self._extract_website(item),
-                    photo_url=self._extract_photo(item)
+                    card2gis=self._extract_card2gis(item)
                 )
                 places.append(place)
             except Exception as e:
@@ -125,6 +119,9 @@ class GISClient:
                 
         return places
 
+    def _extract_card2gis(self, item: Dict) -> str:
+        return f'https://2gis.ru/{item["adm_div.city"]}/firm/{item['id']}'
+    
     def _extract_address(self, item: Dict) -> str:
         adm_div = item.get("adm_div", [])
         if adm_div:
@@ -154,37 +151,11 @@ class GISClient:
             "lon": point.get("lon", 0.0)
         }
 
-    def _extract_working_hours(self, item: Dict) -> Optional[str]:
-        schedule = item.get("schedule")
-        if schedule:
-            return schedule.get("Пн", "Не указано")
-        return None
-
-    def _extract_phone(self, item: Dict) -> Optional[str]:
-        contact_groups = item.get("contact_groups", [])
-        for group in contact_groups:
-            contacts = group.get("contacts", [])
-            for contact in contacts:
-                if contact.get("type") == "phone":
-                    return contact.get("value")
-        return None
-
-    def _extract_website(self, item: Dict) -> Optional[str]:
-        contact_groups = item.get("contact_groups", [])
-        for group in contact_groups:
-            contacts = group.get("contacts", [])
-            for contact in contacts:
-                if contact.get("type") == "website":
-                    return contact.get("value")
-        return None
-
-    def _extract_photo(self, item: Dict) -> Optional[str]:
-        # В базовой версии API фото может быть недоступно
-        return None
 
     def format_place_for_user(self, place: Place) -> str:
         text = f"📍 <b>{place.name}</b>\n"
         text += f"📮 {place.address}\n"
+        text += f'🗺️ {place.card2gis}\n'
         
         if place.rating:
             stars = "⭐" * int(place.rating)
@@ -196,13 +167,5 @@ class GISClient:
         if place.categories:
             text += f"🏷 {', '.join(place.categories[:2])}\n"
             
-        if place.working_hours:
-            text += f"🕒 {place.working_hours}\n"
-            
-        if place.phone:
-            text += f"📞 {place.phone}\n"
-            
-        if place.website:
-            text += f"🌐 {place.website}\n"
             
         return text 

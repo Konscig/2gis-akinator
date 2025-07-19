@@ -63,6 +63,9 @@ class OpenAIClient:
             )}
         ]
         
+        for i in range(len(conversation_history)):
+            if conversation_history[i]["role"] == "user":
+                conversation_history[i]["content"] = sanitize_user_message(conversation_history[i]["content"])
         messages.extend(conversation_history)
         
         try:

@@ -4,6 +4,7 @@ import logging
 
 from root_packages.root import bot
 from root_packages.handlers.standart_handler import dp
+from root_packages import handlers  # Импортируем обработчики
 
 
 async def main() -> None:

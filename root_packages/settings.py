@@ -10,8 +10,21 @@ class Bot:
 
 
 @dataclass
+class OpenAI:
+    api_key: str
+    model: str = "gpt-4o-mini"
+
+
+@dataclass
+class GIS:
+    api_key: str
+
+
+@dataclass
 class Settings:
     bot: Bot
+    openai: OpenAI
+    gis: GIS
 
 
 def get_settings(path: str):
@@ -23,6 +36,13 @@ def get_settings(path: str):
             bot_token=env.str("HTTP_API"),
             group_id=env.str("GROUP_ID"),
             admin_id=env.int("ADMIN_ID")
+        ),
+        openai=OpenAI(
+            api_key=env.str("OPENAI_API_KEY"),
+            model=env.str("OPENAI_MODEL", "gpt-4o-mini")
+        ),
+        gis=GIS(
+            api_key=env.str("GIS_API_KEY", "")
         )
     )
 

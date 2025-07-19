@@ -123,7 +123,7 @@ class GISClient:
         return places
 
     def _extract_card2gis(self, item: Dict) -> str:
-        return f'https://2gis.ru/{item["adm_div.city"]}/firm/{item['id']}'
+        return f'https://2gis.ru/{item.get("adm_div.city","")}/firm/{item.get("id", "")}'
     
     def _extract_address(self, item: Dict) -> str:
         adm_div = item.get("adm_div", [])

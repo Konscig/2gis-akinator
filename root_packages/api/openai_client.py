@@ -1,7 +1,7 @@
 import openai
 import json
 import logging
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 

@@ -1,12 +1,13 @@
-from environs import Env
+from os import getenv
 from dataclasses import dataclass
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 @dataclass
 class Bot:
     bot_token: str
-    group_id: str
-    admin_id: int
 
 
 @dataclass
@@ -28,21 +29,16 @@ class Settings:
 
 
 def get_settings(path: str):
-    env = Env()
-    env.read_env(path)
-
     return Settings(
         bot=Bot(
-            bot_token=env.str("HTTP_API"),
-            group_id=env.str("GROUP_ID"),
-            admin_id=env.int("ADMIN_ID")
+            bot_token=getenv("TELEGRAM_BOT_TOKEN"),
         ),
         openai=OpenAI(
-            api_key=env.str("OPENAI_API_KEY"),
-            model=env.str("OPENAI_MODEL", "gpt-4o-mini")
+            api_key=getenv("OPENAI_API_KEY"),
+            model=getenv("OPENAI_MODEL", "gpt-4o-mini")
         ),
         gis=GIS(
-            api_key=env.str("GIS_API_KEY", "")
+            api_key=getenv("GIS_API_KEY", "")
         )
     )
 

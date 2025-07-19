@@ -1,16 +1,15 @@
 from aiogram import types
+from aiogram.dispatcher.dispatcher import Dispatcher
 from aiogram.filters import CommandStart, Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 import logging
 
 from root_packages.api import OpenAIClient, GISClient
 from root_packages.state import state_manager
-from root_packages.settings import settings
-from .standart_handler import dp
+from settings import settings
 
 
-# Инициализация клиентов API
+dp = Dispatcher()
 openai_client = OpenAIClient(settings.openai.api_key, settings.openai.model)
 gis_client = GISClient(settings.gis.api_key)
 
@@ -289,4 +288,4 @@ async def help_command(message: types.Message):
 async def error_handler(event, exception):
     logging.error(f"An error occurred: {exception}")
     if hasattr(event, 'message') and event.message:
-        await event.message.answer("Произошла ошибка. Попробуйте еще раз или используйте /start для перезапуска.") 
+        await event.message.answer("Произошла ошибка. Попробуйте еще раз или используйте /start для перезапуска.")

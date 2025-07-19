@@ -1,6 +1,0 @@
-HTTP_API = ""
-GROUP_ID = ""
-ADMIN_ID = 0
-OPENAI_API_KEY = ""
-OPENAI_MODEL = "gpt-4o-mini"
-GIS_API_KEY = ""

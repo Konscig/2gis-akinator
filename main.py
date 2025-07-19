@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 from root_packages.root import bot
-from root_packages.handlers.standart_handler import dp
+from root_packages.handlers.akinator_handler import dp
 
 
 async def main() -> None:

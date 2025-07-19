@@ -1,4 +1,4 @@
-from aiogram import types
+from aiogram import types, Router
 from aiogram.dispatcher.dispatcher import Dispatcher
 from aiogram.filters import CommandStart, Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -10,6 +10,7 @@ from settings import settings
 
 
 dp = Dispatcher()
+router = Router()
 openai_client = OpenAIClient(api_key=settings.openai.api_key, model=settings.openai.model)
 gis_client = GISClient(settings.gis.api_key)
 
@@ -30,36 +31,15 @@ async def start_akinator(message: types.Message):
 Поделись своим местоположением, чтобы найти места рядом с тобой! 📍"""
     
     # Кнопка для запроса местоположения
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📍 Поделиться местоположением", callback_data="request_location")],
-        [InlineKeyboardButton(text="🚀 Начать без геолокации", callback_data="start_without_location")]
-    ])
-    
-    await message.answer(welcome_text, reply_markup=keyboard)
-
-
-@dp.callback_query(lambda c: c.data == "request_location")
-async def request_location(callback: types.CallbackQuery):
-    from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-    
-    location_keyboard = ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text="📍 Отправить местоположение", request_location=True)]],
+    keyboard = types.ReplyKeyboardMarkup(
+        keyboard=[
+            [types.KeyboardButton(text="📍 Поделиться местоположением", request_location=True)],
+        ],
         resize_keyboard=True,
         one_time_keyboard=True
     )
     
-    await callback.message.edit_text(
-        "Отправь мне свое местоположение, нажав на кнопку ниже:",
-        reply_markup=location_keyboard
-    )
-    await callback.answer()
-
-
-@dp.callback_query(lambda c: c.data == "start_without_location")
-async def start_without_location(callback: types.CallbackQuery):
-    await ask_first_question(callback.message, callback.from_user.id)
-    await callback.answer()
-
+    await message.answer(welcome_text, reply_markup=keyboard)
 
 @dp.message(lambda message: message.location is not None)
 async def handle_location(message: types.Message):
@@ -77,6 +57,7 @@ async def handle_location(message: types.Message):
     )
     
     await ask_first_question(message, user_id)
+
 
 
 async def ask_first_question(message: types.Message, user_id: int):
@@ -284,7 +265,7 @@ async def help_command(message: types.Message):
 
 
 # Обработка ошибок
-@dp.error()
+@router.error()
 async def error_handler(event, exception):
     logging.error(f"An error occurred: {exception}")
     if hasattr(event, 'message') and event.message:

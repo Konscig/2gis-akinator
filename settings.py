@@ -35,7 +35,7 @@ def get_settings(path: str):
         ),
         openai=OpenAI(
             api_key=getenv("OPENAI_API_KEY"),
-            model=getenv("OPENAI_MODEL", "gpt-4o-mini")
+            model=getenv("OPENAI_MODEL", "gpt-4.1-mini")
         ),
         gis=GIS(
             api_key=getenv("GIS_API_KEY", "")

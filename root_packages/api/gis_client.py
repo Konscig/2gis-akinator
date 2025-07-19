@@ -1,5 +1,6 @@
 import aiohttp
 import logging
+import ssl
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from .openai_client import UserPreferences
@@ -24,6 +25,9 @@ class GISClient:
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key
         self.base_url = "https://catalog.api.2gis.com/3.0/items"
+        self.ssl_context = ssl.create_default_context()
+        self.ssl_context.check_hostname = False
+        self.ssl_context.verify_mode = ssl.CERT_NONE
         
     async def search_places(
         self, 
@@ -36,7 +40,7 @@ class GISClient:
         
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.get(self.base_url, params=params) as response:
+                async with session.get(self.base_url, params=params, ssl=self.ssl_context) as response:
                     if response.status != 200:
                         logging.error(f"2GIS API error: {response.status}")
                         return []
@@ -51,7 +55,7 @@ class GISClient:
     def _build_search_params(
         self, 
         preferences: UserPreferences, 
-        location: Optional[Dict[str, float]], 
+        location: Optional[Dict[str, float]],
         radius: int, 
         limit: int
     ) -> Dict[str, Any]:
@@ -67,7 +71,6 @@ class GISClient:
         if location:
             params["point"] = f"{location['lon']},{location['lat']}"
             params["radius"] = radius
-        
         # Формируем поисковый запрос на основе предпочтений
         query_parts = []
         

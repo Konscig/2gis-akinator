@@ -10,7 +10,7 @@ from settings import settings
 
 
 dp = Dispatcher()
-openai_client = OpenAIClient(settings.openai.api_key, settings.openai.model)
+openai_client = OpenAIClient(api_key=settings.openai.api_key, model=settings.openai.model)
 gis_client = GISClient(settings.gis.api_key)
 
 

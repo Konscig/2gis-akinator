@@ -30,7 +30,7 @@ class GISClient:
         self, 
         user_preferences: UserPreferences,
         location: Optional[Dict[str, float]] = None,
-        radius: int = 5000,
+        radius: int = 2000,
         limit: int = 10
     ) -> List[Place]:
         params = self._build_search_params(user_preferences, location, radius, limit)
@@ -59,7 +59,7 @@ class GISClient:
         params = {
             "fields": "items.point,items.adm_div,items.contact_groups,items.rubrics,items.reviews,items.schedule",
             "page_size": limit
-        }
+            }
         
         if self.api_key:
             params["key"] = self.api_key

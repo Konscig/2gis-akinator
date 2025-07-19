@@ -15,7 +15,7 @@ openai_client = OpenAIClient(api_key=settings.openai.api_key, model=settings.ope
 gis_client = GISClient(settings.gis.api_key)
 
 
-@dp.message(CommandStart())
+@dp.message(Command("start"))
 async def start_akinator(message: types.Message):
     user_id = message.from_user.id
     user_name = message.from_user.full_name
@@ -189,51 +189,11 @@ async def show_search_results(message: types.Message, places, user_id: int):
     
     results_text = "🎯 Вот что я нашел для тебя:\n\n"
     
-    for i, place in enumerate(places[:5], 1):
+    for i, place in enumerate(places[:3], 1):
         results_text += f"{i}. {gis_client.format_place_for_user(place)}\n"
     
-    # Кнопки для взаимодействия с результатами
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="👍 Отлично!", callback_data="results_good")],
-        [InlineKeyboardButton(text="👎 Не подходит", callback_data="results_bad")],
-        [InlineKeyboardButton(text="🔄 Новый поиск", callback_data="new_search")]
-    ])
-    
-    await message.answer(results_text, reply_markup=keyboard)
+    await message.answer(results_text)
 
-
-@dp.callback_query(lambda c: c.data == "results_good")
-async def results_good(callback: types.CallbackQuery):
-    await callback.message.edit_text(
-        "🎉 Отлично! Надеюсь, тебе понравится выбранное место!\n\n"
-        "Хочешь найти еще что-то? Используй /start для нового поиска."
-    )
-    state_manager.clear_session(callback.from_user.id)
-    await callback.answer()
-
-
-@dp.callback_query(lambda c: c.data == "results_bad") 
-async def results_bad(callback: types.CallbackQuery):
-    user_id = callback.from_user.id
-    state_manager.set_session_state(user_id, "refining")
-    
-    await callback.message.edit_text(
-        "Понятно! Что именно тебе не подходит в предложенных местах? "
-        "Расскажи подробнее, чтобы я мог скорректировать поиск."
-    )
-    await callback.answer()
-
-
-@dp.callback_query(lambda c: c.data == "new_search")
-async def new_search(callback: types.CallbackQuery):
-    user_id = callback.from_user.id
-    state_manager.clear_session(user_id)
-    state_manager.set_session_state(user_id, "collecting_preferences")
-    
-    await callback.message.edit_text(
-        "🔄 Начинаем новый поиск! Что ты хочешь найти?"
-    )
-    await callback.answer()
 
 
 @dp.message(Command("help"))

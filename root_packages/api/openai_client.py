@@ -136,10 +136,10 @@ class OpenAIClient:
             bool(preferences.price_range),
             bool(preferences.activity_type),
             bool(preferences.time_preference),
-            bool(preferences.specific_requirements)
+            bool(len(preferences.specific_requirements))
         ])
         
-        return filled_fields >= 3
+        return filled_fields >= 5
 
     async def generate_search_refinement_question(self, search_results: List[Dict], user_message: str) -> str:
         system_prompt = """Пользователь посмотрел результаты поиска мест и дал обратную связь. 

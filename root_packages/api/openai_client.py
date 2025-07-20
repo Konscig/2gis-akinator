@@ -136,7 +136,7 @@ class OpenAIClient:
             bool(preferences.price_range),
             bool(preferences.activity_type),
             bool(preferences.time_preference),
-            bool(len(preferences.specific_requirements))
+            len(preferences.specific_requirements)
         ])
         
         return filled_fields >= 5

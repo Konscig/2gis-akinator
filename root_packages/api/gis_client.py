@@ -31,9 +31,10 @@ class GISClient:
         user_preferences: UserPreferences,
         location: Optional[Dict[str, float]] = None,
         radius: int = 2000,
-        limit: int = 10
+        limit: int = 10,
+        sort: str = 'rating'
     ) -> List[Place]:
-        params = self._build_search_params(user_preferences, location, radius, limit)
+        params = self._build_search_params(user_preferences, location, radius, limit, sort)
         
         async with aiohttp.ClientSession() as session:
             try:
@@ -54,11 +55,14 @@ class GISClient:
         preferences: UserPreferences, 
         location: Optional[Dict[str, float]],
         radius: int, 
-        limit: int
+        limit: int,
+        sort: str
+
     ) -> Dict[str, Any]:
         params = {
             "fields": "items.point,items.adm_div,items.contact_groups,items.rubrics,items.reviews,items.schedule",
-            "page_size": limit
+            "page_size": limit,
+            "sort": sort
             }
         
         if self.api_key:

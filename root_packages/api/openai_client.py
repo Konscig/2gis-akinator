@@ -48,7 +48,9 @@ class OpenAIClient:
         - Время: {time_preference}
         - Тип активности: {activity_type}
         - Особые требования: {specific_requirements}
-        
+
+        ВАЖНО: не спрашивай про город, район, местоположение клиента. Эта информация о пользователе уже имеется.
+
         Помни, что твоя задача - помочь пользователю найти интересные места в городе через 2ГИС. И больше ничего.
         """
         
@@ -73,7 +75,7 @@ class OpenAIClient:
                 model=self.model,
                 messages=messages,
                 max_tokens=300,
-                temperature=0.8
+                temperature=0.6
             )
             return response.choices[0].message.content
         except Exception as e:
